@@ -29,6 +29,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		UCameraComponent* Camera;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UParticleSystemComponent* FP_GunshotParticle;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UParticleSystemComponent* TP_GunshotParticle;
+
 public:
 	AFP_FirstPersonCharacter();
 
@@ -57,6 +63,14 @@ public:
 protected:
 	void OnFire();
 
+	UFUNCTION(Reliable, Server)
+		void OnFire_Server(const FVector& LineStart, const FVector& LienEnd);
+		void OnFire_Server_Implementation(const FVector& LineStart, const FVector& LienEnd);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void FireEffect();
+		void FireEffect_Implementation();
+
 	void MoveForward(float Val);
 
 	void MoveRight(float Val);
@@ -72,15 +86,4 @@ protected:
 public:
 	FORCEINLINE class USkeletalMeshComponent* GetFP_Mesh() const { return FP_Mesh; }
 	FORCEINLINE class UCameraComponent* GetCamera() const { return Camera; }
-
-	//RPC
-private:
-	UFUNCTION(Reliable, Server)
-		void OnServer();
-
-	UFUNCTION(NetMulticast, Reliable)
-		void OnNetMulticast();
-
-	UFUNCTION(Client, Unreliable)
-		void OnClient();
 };
