@@ -38,6 +38,10 @@ public:
 public:
 	AFP_FirstPersonCharacter();
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	// Properties
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 		float BaseTurnRate;
