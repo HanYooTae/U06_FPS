@@ -8,8 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "Net/UnrealNetwork.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "CBullet.h"
-#include "Game/CGameState.h"
 
 #define COLLISION_WEAPON		ECC_GameTraceChannel1
 
@@ -60,8 +60,8 @@ void AFP_FirstPersonCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
-	
+	if(HasAuthority() == false)
+		SetTeamColor(CurrentTeam);
 }
 
 void AFP_FirstPersonCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -155,6 +155,33 @@ void AFP_FirstPersonCharacter::FireEffect_Implementation()
 		world->SpawnActor<ACBullet>(ACBullet::StaticClass(), FP_Gun->GetSocketLocation("Muzzle"), FP_Gun->GetSocketRotation("Muzzle"));
 }
 
+void AFP_FirstPersonCharacter::SetTeamColor_Implementation(ETeamType InTeamType)
+{
+	FLinearColor teamColor;
+
+	if (InTeamType == ETeamType::Red)
+	{
+		teamColor = FLinearColor::Red;
+	}
+	else
+	{
+		teamColor = FLinearColor::Blue;
+	}
+
+	if (DynamicMaterial == nullptr)
+	{
+
+		if (DynamicMaterial == nullptr)
+		{
+			DynamicMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), nullptr);
+			DynamicMaterial->SetVectorParameterValue("BodyColor", teamColor);
+
+			GetMesh()->SetMaterial(0, DynamicMaterial);
+			FP_Mesh->SetMaterial(0, DynamicMaterial);
+		}
+	}
+}
+
 void AFP_FirstPersonCharacter::MoveForward(float Value)
 {
 	if (Value != 0.0f)
@@ -192,7 +219,8 @@ FHitResult AFP_FirstPersonCharacter::WeaponTrace(const FVector& StartTrace, cons
 	return Hit;
 }
 
-//void AFP_FirstPersonCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-//{
-//	DOREPLIFETIME(AFP_FirstPersonCharacter, RandomValue);
-//}
+void AFP_FirstPersonCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFP_FirstPersonCharacter, CurrentTeam);
+}

@@ -13,6 +13,8 @@ class AFP_FirstPersonGameMode : public AGameModeBase
 
 public:
 	AFP_FirstPersonGameMode();
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };
 
 
