@@ -21,15 +21,28 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	FORCEINLINE ETeamType GetTeam() { return Team; }
+	bool IsBlocked() { return OverlappingActors.Num() > 0; }
+
+private:
+	UFUNCTION()
+		void BeginOverlap(AActor* OverlapActor, AActor* OtherActor);
+
+	UFUNCTION()
+		void EndOverlap(AActor* OverlapActor, AActor* OtherActor);
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCapsuleComponent* Capsule;
+
+	TArray<AActor*> OverlappingActors;
 
 protected:
 	UPROPERTY(EditAnywhere)
 		ETeamType Team;
 
 	UPROPERTY(EditAnywhere)
-		bool bHiddenInGame;
+		bool bHiddenInGame = false;
 
 };

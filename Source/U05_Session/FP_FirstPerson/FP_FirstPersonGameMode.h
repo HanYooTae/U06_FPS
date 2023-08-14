@@ -15,7 +15,23 @@ public:
 	AFP_FirstPersonGameMode();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
-};
+	virtual void Tick(float DeltaSeconds) override;
 
+public:
+	void MoveToSpawnPoint(class AFP_FirstPersonCharacter* InPlayer);
+	void SpawnHost(UWorld* world);
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	TArray<class AFP_FirstPersonCharacter*> RedTeamPlayers;
+	TArray<class AFP_FirstPersonCharacter*> BlueTeamPlayers;
+	TArray<class AFP_FirstPersonCharacter*> WaitingPlayers;
+
+	// 숫자 체크만
+	TArray<class ACSpawnPoint*> RedTeamSpawnPoints;
+	TArray<class ACSpawnPoint*> BlueTeamSpawnPoints;
+};
 
 
