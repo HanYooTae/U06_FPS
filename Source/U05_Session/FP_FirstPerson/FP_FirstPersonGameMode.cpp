@@ -61,17 +61,14 @@ void AFP_FirstPersonGameMode::PostLogin(APlayerController* NewPlayer)
 	UWorld* world = GetWorld();
 	CheckNull(world);
 
-	for (TActorIterator<ACSpawnPoint> it(world); it; ++it)
-	{
-		if ((*it)->GetTeam() == ETeamType::Red)
-			RedTeamSpawnPoints.Add(*it);
-		else
-			BlueTeamSpawnPoints.Add(*it);
-	}
-
 	SpawnHost(world);
 
 	MoveToSpawnPoint(playerPawn);
+}
+
+void AFP_FirstPersonGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 
 void AFP_FirstPersonGameMode::SpawnHost(UWorld* world)
@@ -103,20 +100,17 @@ void AFP_FirstPersonGameMode::MoveToSpawnPoint(AFP_FirstPersonCharacter* InPlaye
 
 			return;
 		}
-
-		// 스폰 포인트가 블락되어 있는 경우
-		if (WaitingPlayers.Find(InPlayer) < 0)
-			WaitingPlayers.Add(InPlayer);
 	}
-
-
+	// 스폰 포인트가 블락되어 있는 경우
+	if (WaitingPlayers.Find(InPlayer) < 0)
+		WaitingPlayers.Add(InPlayer);
 }
 
 void AFP_FirstPersonGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*UWorld* world = GetWorld();
+	UWorld* world = GetWorld();
 	CheckNull(world);
 
 	for (TActorIterator<ACSpawnPoint> it(world); it; ++it)
@@ -127,11 +121,11 @@ void AFP_FirstPersonGameMode::BeginPlay()
 			BlueTeamSpawnPoints.Add(*it);
 	}
 
-	for (const auto& player : RedTeamPlayers)
-		MoveToSpawnPoint(player);
-
-	for (const auto& player : BlueTeamPlayers)
-		MoveToSpawnPoint(player);*/
+	//for (const auto& player : RedTeamPlayers)
+	//	MoveToSpawnPoint(player);
+	//
+	//for (const auto& player : BlueTeamPlayers)
+	//	MoveToSpawnPoint(player);
 
 	
 }
