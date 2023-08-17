@@ -20,6 +20,7 @@ public:
 public:
 	void MoveToSpawnPoint(class AFP_FirstPersonCharacter* InPlayer);
 	void SpawnHost(UWorld* world);
+	void Respawn(class AFP_FirstPersonCharacter* InPlayer);
 
 protected:
 	virtual void BeginPlay() override;

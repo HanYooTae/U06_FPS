@@ -118,6 +118,11 @@ public:
 	FORCEINLINE class UCameraComponent* GetCamera() const { return Camera; }
 
 private:
+	UFUNCTION()
+		void Respawn();
+
+private:
 	class UMaterialInstanceDynamic* DynamicMaterial;
 	class ACPlayerState* SelfPlayerState;
+	TArray<class AActor*> IgnoreActors;		// Line충돌에서 제외할 Actor
 };

@@ -40,8 +40,6 @@ void AFP_FirstPersonGameMode::PostLogin(APlayerController* NewPlayer)
 	AFP_FirstPersonCharacter* playerPawn = Cast<AFP_FirstPersonCharacter>(NewPlayer->GetPawn());
 	CheckNull(playerPawn);
 
-	playerPawn->SetPlayerState(playerState);
-
 	if (RedTeamPlayers.Num() > BlueTeamPlayers.Num())
 	{
 		BlueTeamPlayers.Add(playerPawn);
@@ -69,6 +67,16 @@ void AFP_FirstPersonGameMode::PostLogin(APlayerController* NewPlayer)
 void AFP_FirstPersonGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	CLog::Print("WaitingPlayers : " + FString::FromInt(WaitingPlayers.Num()), 1);
+
+	if (WaitingPlayers.Num() > 0)
+	{
+		for (const auto& player : WaitingPlayers)
+		{
+			MoveToSpawnPoint(player);
+		}
+	}
 }
 
 void AFP_FirstPersonGameMode::SpawnHost(UWorld* world)
@@ -79,6 +87,29 @@ void AFP_FirstPersonGameMode::SpawnHost(UWorld* world)
 	CheckNull(hostPawn);
 
 	MoveToSpawnPoint(hostPawn);
+}
+
+void AFP_FirstPersonGameMode::Respawn(AFP_FirstPersonCharacter* InPlayer)
+{
+	// 컨트롤러 끊기
+	AController* controller = InPlayer->GetController();
+	InPlayer->DetachFromControllerPendingDestroy();
+
+	// 다시 스폰시키기
+	AFP_FirstPersonCharacter* player =  GetWorld()->SpawnActor<AFP_FirstPersonCharacter>(DefaultPawnClass);
+	CheckNull(player);
+
+	// 다시 빙의
+	controller->Possess(player);
+
+	// 기존의 팀정보 유지
+	//player->GetSelfPlayerState();
+	ACPlayerState* playerState = Cast<ACPlayerState>(controller->PlayerState);
+	player->CurrentTeam = playerState->Team;
+	player->SetTeamColor(playerState->Team);
+
+	// 스폰 포인트로 이동
+	MoveToSpawnPoint(player);
 }
 
 void AFP_FirstPersonGameMode::MoveToSpawnPoint(AFP_FirstPersonCharacter* InPlayer)
@@ -97,6 +128,9 @@ void AFP_FirstPersonGameMode::MoveToSpawnPoint(AFP_FirstPersonCharacter* InPlaye
 		{
 			InPlayer->SetActorLocation(target->GetActorLocation());
 			target->UpdateOverlaps();
+
+			if (WaitingPlayers.Find(InPlayer) >= 0)
+				WaitingPlayers.Remove(InPlayer);
 
 			return;
 		}

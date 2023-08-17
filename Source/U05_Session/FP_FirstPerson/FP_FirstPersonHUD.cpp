@@ -46,4 +46,10 @@ void AFP_FirstPersonHUD::DrawHUD()
 
 	str = "Death : " + FString::SanitizeFloat(death, 0);
 	DrawText(str, FLinearColor::Black, 50, 90);
+
+	if (health <= 0)
+	{
+		str = "You Dead, Noob";
+		DrawText(str, FLinearColor::Black, Center.X * 0.5f, Center.Y, nullptr, 5);
+	}
 }
